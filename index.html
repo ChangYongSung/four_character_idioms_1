@@ -90,6 +90,18 @@
     margin-bottom: 20px;
   }
 
+  .logo-title-row {
+    display: inline-flex;
+    align-items: flex-end;
+    gap: 8px;
+  }
+  .logo-version {
+    font-size: 13px;
+    color: #aaa;
+    font-weight: 400;
+    margin-bottom: 6px;
+    letter-spacing: 0.03em;
+  }
   .logo-hanja {
     font-family: 'Noto Serif KR', serif;
     font-size: clamp(24px, 5vw, 42px);
@@ -522,7 +534,15 @@
   .dot-correct { background: var(--green); }
   .dot-wrong { background: var(--red); }
 
-  /* ── DUO SCREEN ── */
+  /* 폭죽 캔버스 */
+  #confetti-canvas {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 999;
+  }
+
+
   .duo-wrap {
     width: 100%;
     max-width: 1100px;
@@ -617,7 +637,7 @@
   }
   .duo-result-table th {
     font-family: 'Noto Serif KR', serif;
-    font-size: 14px;
+    font-size: 16.8px;
     color: var(--muted);
     padding: 8px 12px;
     border-bottom: 2px solid var(--paper2);
@@ -758,6 +778,7 @@
 <body>
 
 <div class="grain"></div>
+<canvas id="confetti-canvas"></canvas>
 <div class="flash" id="flash"></div>
 
 <!-- ══ HOME SCREEN ══ -->
@@ -765,7 +786,10 @@
   <div class="screen-inner" id="inner-home">
   <div class="home-wrap">
     <div class="logo-area">
-      <div class="logo-hanja">어린이 고사성어 퀴즈</div>
+      <div class="logo-title-row">
+        <div class="logo-hanja">어린이 고사성어 퀴즈</div>
+        <span class="logo-version">v1.2</span>
+      </div>
     </div>
 
     <div class="mode-cards">
@@ -791,11 +815,11 @@
         <h2><span class="mode-inline-label">방식 2)</span> 정해진 시간 동안 많이 맞히기</h2>
         <p class="mode-desc">정해진 시간 안에 최대한 많은 문제를 맞힙니다.</p>
         <div class="slider-wrap">
-          <div class="slider-value"><span id="time-val">1</span> <span class="slider-unit">분</span></div>
+          <div class="slider-value"><span id="time-val">1분</span></div>
           <div class="slider-labels">
-            <span>1분</span><span>2분</span><span>3분</span><span>4분</span><span>5분</span>
+            <span>1분</span><span>1분30초</span><span>2분</span><span>2분30초</span><span>3분</span>
           </div>
-          <input type="range" id="slider-time" min="1" max="5" step="1" value="1">
+          <input type="range" id="slider-time" min="0" max="4" step="1" value="0">
         </div>
         <div class="btn-start-row">
           <button class="btn-start btn-start-time" onclick="startGame('time', 'solo')">👤 1인 연습 시작</button>
@@ -1045,6 +1069,8 @@ const DATA = [
 
 // ══ SLIDER SETUP ══
 const countValues = [15, 20, 25, 30];
+const timeValues = [60, 90, 120, 150, 180];
+const timeLabels = ['1분', '1분 30초', '2분', '2분 30초', '3분'];
 const sliderCount = document.getElementById('slider-count');
 const countVal = document.getElementById('count-val');
 const sliderTime = document.getElementById('slider-time');
@@ -1061,7 +1087,7 @@ sliderCount.addEventListener('input', () => {
   updateSliderBg(sliderCount);
 });
 sliderTime.addEventListener('input', () => {
-  timeVal.textContent = sliderTime.value;
+  timeVal.textContent = timeLabels[+sliderTime.value];
   updateSliderBg(sliderTime);
 });
 updateSliderBg(sliderCount);
@@ -1151,7 +1177,7 @@ function startGame(mode, playerMode) {
   gameMode = mode;
   playerMode = playerMode || 'solo';
   targetCount = countValues[+sliderCount.value];
-  targetSecs = +sliderTime.value * 60;
+  targetSecs = timeValues[+sliderTime.value];
 
   if (playerMode === 'duo') {
     startDuoGame(mode);
@@ -1348,14 +1374,14 @@ function endGame() {
     subtitle = `${targetCount}문제를 ${m}분 ${s}초 만에 풀었습니다.`;
   } else {
     const minutes = targetSecs / 60;
-    const weightMap2 = {1: 1.0, 2: 0.9, 3: 0.8, 4: 0.7, 5: 0.6};
+    const weightMap2 = {1: 1.0, 1.5: 0.95, 2: 0.9, 2.5: 0.85, 3: 0.8};
     const weight2 = weightMap2[minutes] || 1.0;
     const secsPerQ2 = correctCount > 0 ? (targetSecs / correctCount) * weight2 : 999;
     if (secsPerQ2 <= 3) { trophy = '🏆'; title = '전설의 실력!'; }
     else if (secsPerQ2 <= 5) { trophy = '🥇'; title = '훌륭해요!'; }
     else if (secsPerQ2 <= 8) { trophy = '🥈'; title = '잘했어요!'; }
     else { trophy = '📖'; title = '더 연습해봐요!'; }
-    subtitle = `${minutes}분 동안 ${correctCount}개를 맞혔습니다.`;
+    subtitle = `${timeLabels[+sliderTime.value]} 동안 ${correctCount}개를 맞혔습니다.`;
   }
 
   document.getElementById('result-trophy').textContent = trophy;
@@ -1398,7 +1424,92 @@ function endGame() {
 
   showScreen('screen-result');
 }
-// ══ DUO GAME ══
+// ══ CONFETTI ══
+(function(){
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  let particles = [];
+  let animId = null;
+
+  function resize() {
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  }
+  window.addEventListener('resize', resize);
+  resize();
+
+  const COLORS = ['#c8922a','#e8b84b','#2563eb','#dc2626','#2d6a4f','#f472b6','#a78bfa','#34d399'];
+
+  function makeParticle(x, y) {
+    const angle = Math.random() * Math.PI * 2;
+    const speed = 3 + Math.random() * 6;
+    return {
+      x, y,
+      vx: Math.cos(angle) * speed,
+      vy: Math.sin(angle) * speed - 4,
+      color: COLORS[Math.floor(Math.random() * COLORS.length)],
+      size: 5 + Math.random() * 6,
+      gravity: 0.18,
+      drag: 0.97,
+      alpha: 1,
+      rot: Math.random() * Math.PI * 2,
+      rotSpeed: (Math.random() - 0.5) * 0.2,
+      shape: Math.random() < 0.5 ? 'rect' : 'circle',
+    };
+  }
+
+  function burst(x, y, count) {
+    for (let i = 0; i < count; i++) particles.push(makeParticle(x, y));
+  }
+
+  function step() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    particles.forEach(p => {
+      p.vy += p.gravity;
+      p.vx *= p.drag;
+      p.vy *= p.drag;
+      p.x += p.vx;
+      p.y += p.vy;
+      p.rot += p.rotSpeed;
+      p.alpha -= 0.012;
+      if (p.alpha <= 0) return;
+      ctx.save();
+      ctx.globalAlpha = Math.max(0, p.alpha);
+      ctx.fillStyle = p.color;
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.rot);
+      if (p.shape === 'rect') {
+        ctx.fillRect(-p.size/2, -p.size/4, p.size, p.size/2);
+      } else {
+        ctx.beginPath();
+        ctx.arc(0, 0, p.size/2, 0, Math.PI*2);
+        ctx.fill();
+      }
+      ctx.restore();
+    });
+    particles = particles.filter(p => p.alpha > 0);
+    if (particles.length > 0) animId = requestAnimationFrame(step);
+    else ctx.clearRect(0, 0, canvas.width, canvas.height);
+  }
+
+  window.launchConfetti = function() {
+    if (animId) cancelAnimationFrame(animId);
+    particles = [];
+    const w = canvas.width, h = canvas.height;
+    // 여러 위치에서 터트리기
+    const positions = [
+      [w*0.2, h*0.3], [w*0.5, h*0.2], [w*0.8, h*0.3],
+      [w*0.1, h*0.5], [w*0.9, h*0.5],
+    ];
+    positions.forEach(([x, y]) => burst(x, y, 60));
+    // 시간 차를 두고 추가 폭발
+    setTimeout(() => { burst(w*0.3, h*0.25, 50); burst(w*0.7, h*0.25, 50); animId = requestAnimationFrame(step); }, 300);
+    setTimeout(() => { burst(w*0.5, h*0.15, 80); }, 600);
+    animId = requestAnimationFrame(step);
+  };
+})();
+
+
 let duoState = {};
 
 function startDuoGame(mode) {
@@ -1585,7 +1696,7 @@ function endDuoGame() {
   document.getElementById('duo-result-subtitle').textContent =
     gameMode === 'count'
       ? `${targetCount}문제 개수 모드 결과`
-      : `${targetSecs/60}분 시간 모드 결과`;
+      : `${timeLabels[+sliderTime.value]} 시간 모드 결과`;
 
   const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
   const s = String(elapsed % 60).padStart(2, '0');
@@ -1626,6 +1737,7 @@ function endDuoGame() {
   `;
 
   showScreen('screen-duo-result');
+  if (winner !== '🤝 무승부!') setTimeout(launchConfetti, 300);
 }
 
 </script>
