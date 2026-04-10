@@ -92,7 +92,7 @@
 
   .logo-hanja {
     font-family: 'Noto Serif KR', serif;
-    font-size: clamp(38px, 8vw, 64px);
+    font-size: clamp(24px, 5vw, 42px);
     font-weight: 900;
     color: var(--gold);
     line-height: 1;
@@ -256,7 +256,18 @@
     color: white;
     box-shadow: 0 4px 14px rgba(176,58,46,0.35);
   }
-  .btn-start:hover {
+  .btn-start-row {
+    display: flex;
+    gap: 10px;
+  }
+  .btn-start-row .btn-start {
+    flex: 1;
+  }
+  .btn-start-duo {
+    background: linear-gradient(135deg, #5a7a52, #7aaa6a);
+    color: white;
+    box-shadow: 0 4px 14px rgba(90,122,82,0.35);
+  }
     transform: translateY(-1px);
     filter: brightness(1.08);
   }
@@ -511,7 +522,126 @@
   .dot-correct { background: var(--green); }
   .dot-wrong { background: var(--red); }
 
-  /* ── RESULT SCREEN ── */
+  /* ── DUO SCREEN ── */
+  .duo-wrap {
+    width: 100%;
+    max-width: 1100px;
+  }
+  .duo-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    gap: 12px;
+  }
+  .duo-panels {
+    display: flex;
+    gap: 0;
+    align-items: flex-start;
+  }
+  .duo-panel {
+    flex: 1;
+    min-width: 0;
+    padding: 0 12px;
+  }
+  .duo-divider {
+    width: 3px;
+    background: linear-gradient(180deg, transparent, var(--paper2), transparent);
+    align-self: stretch;
+    flex-shrink: 0;
+    border-radius: 2px;
+  }
+  .duo-player-label {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 18px;
+    font-weight: 900;
+    text-align: center;
+    margin-bottom: 8px;
+    padding: 6px;
+    border-radius: 8px;
+  }
+  .p1-label { background: rgba(59,130,246,0.1); color: #2563eb; }
+  .p2-label { background: rgba(239,68,68,0.1); color: #dc2626; }
+  .duo-score-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+    justify-content: center;
+  }
+  .duo-score-chip {
+    font-size: 14px;
+    color: var(--muted);
+  }
+  .duo-score-chip strong {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 18px;
+    color: var(--ink);
+  }
+  .duo-qnum {
+    font-size: 13px;
+    color: var(--muted);
+    margin-left: auto;
+  }
+  .duo-qcard {
+    padding: 14px 12px 10px;
+    margin-bottom: 8px;
+    min-height: 100px;
+  }
+  .duo-choices {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 7px;
+    margin-bottom: 4px;
+  }
+  .duo-choices .choice-btn {
+    font-size: 14px;
+    padding: 10px 8px;
+  }
+  .duo-choices .choice-letter {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+  }
+
+  /* ── DUO RESULT TABLE ── */
+  .duo-result-table {
+    width: 100%;
+    max-width: 500px;
+    margin: 0 auto 28px;
+    border-collapse: collapse;
+  }
+  .duo-result-table table {
+    width: 100%;
+    border-collapse: collapse;
+  }
+  .duo-result-table th {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 14px;
+    color: var(--muted);
+    padding: 8px 12px;
+    border-bottom: 2px solid var(--paper2);
+    text-align: center;
+  }
+  .duo-result-table td {
+    font-family: 'Noto Serif KR', serif;
+    font-size: 20px;
+    font-weight: 700;
+    padding: 10px 12px;
+    text-align: center;
+    border-bottom: 1px solid var(--paper2);
+  }
+  .duo-result-table .row-label {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--muted);
+    text-align: left;
+  }
+  .p1-val { color: #2563eb; }
+  .p2-val { color: #dc2626; }
+  .winner-val { color: var(--gold); }
+
+
   .result-wrap {
     width: 100%;
     max-width: 480px;
@@ -635,15 +765,14 @@
   <div class="screen-inner" id="inner-home">
   <div class="home-wrap">
     <div class="logo-area">
-      <div class="logo-hanja">四字成語</div>
-      <div class="logo-sub">사자성어 퀴즈</div>
+      <div class="logo-hanja">어린이 고사성어 퀴즈</div>
     </div>
 
     <div class="mode-cards">
       <!-- MODE 1 : COUNT -->
       <div class="mode-card" data-icon="📚">
         <h2><span class="mode-inline-label">방식 1)</span> 정해진 개수 빨리 풀기</h2>
-        <p class="mode-desc">문제 수를 정하고, 모두 맞히기까지 걸리는 시간을 겨룹니다.</p>
+        <p class="mode-desc">정해진 수의 문제를 모두 맞히기까지 걸리는 시간을 봅니다.</p>
         <div class="slider-wrap">
           <div class="slider-value"><span id="count-val">20</span> <span class="slider-unit">문제</span></div>
           <div class="slider-labels">
@@ -651,21 +780,27 @@
           </div>
           <input type="range" id="slider-count" min="0" max="3" step="1" value="1">
         </div>
-        <button class="btn-start btn-start-count" onclick="startGame('count')">⏱ 시작하기</button>
+        <div class="btn-start-row">
+          <button class="btn-start btn-start-count" onclick="startGame('count', 'solo')">👤 1인 연습 시작</button>
+          <button class="btn-start btn-start-duo" onclick="startGame('count', 'duo')">👥 2인 대전 시작</button>
+        </div>
       </div>
 
       <!-- MODE 2 : TIME -->
       <div class="mode-card" data-icon="⏳">
         <h2><span class="mode-inline-label">방식 2)</span> 정해진 시간 동안 많이 맞히기</h2>
-        <p class="mode-desc">시간을 정하고, 제한 시간 안에 최대한 많은 문제를 맞힙니다.</p>
+        <p class="mode-desc">정해진 시간 안에 최대한 많은 문제를 맞힙니다.</p>
         <div class="slider-wrap">
-          <div class="slider-value"><span id="time-val">2</span> <span class="slider-unit">분</span></div>
+          <div class="slider-value"><span id="time-val">1</span> <span class="slider-unit">분</span></div>
           <div class="slider-labels">
             <span>1분</span><span>2분</span><span>3분</span><span>4분</span><span>5분</span>
           </div>
-          <input type="range" id="slider-time" min="1" max="5" step="1" value="2">
+          <input type="range" id="slider-time" min="1" max="5" step="1" value="1">
         </div>
-        <button class="btn-start btn-start-time" onclick="startGame('time')">🏆 시작하기</button>
+        <div class="btn-start-row">
+          <button class="btn-start btn-start-time" onclick="startGame('time', 'solo')">👤 1인 연습 시작</button>
+          <button class="btn-start btn-start-duo" onclick="startGame('time', 'duo')">👥 2인 대전 시작</button>
+        </div>
       </div>
     </div>
   </div>
@@ -729,6 +864,80 @@
   </div>
 </div>
 
+<!-- ══ DUO QUIZ SCREEN ══ -->
+<div class="screen hidden" id="screen-duo">
+  <div class="screen-inner" id="inner-duo">
+  <div class="duo-wrap">
+
+    <!-- 공용 타이머 헤더 -->
+    <div class="duo-header">
+      <span class="badge-pill" id="duo-mode-badge">개수 모드</span>
+      <div class="timer-box" id="duo-timer-box">
+        <span class="timer-icon">⏱</span>
+        <span class="timer-val" id="duo-timer-display">00:00</span>
+      </div>
+      <button class="btn-go-home" onclick="goHome()">처음으로</button>
+    </div>
+
+    <div class="progress-bar-wrap">
+      <div class="progress-bar-fill" id="duo-progress-bar" style="width:0%"></div>
+    </div>
+
+    <!-- 두 플레이어 패널 -->
+    <div class="duo-panels">
+
+      <!-- 플레이어 1 (왼쪽) -->
+      <div class="duo-panel" id="panel-p1">
+        <div class="duo-player-label p1-label">🔵 플레이어 1</div>
+        <div class="duo-score-row">
+          <span class="duo-score-chip">✅ <strong id="p1-correct">0</strong></span>
+          <span class="duo-score-chip">❌ <strong id="p1-wrong">0</strong></span>
+          <span class="duo-qnum" id="p1-qnum">문제 1</span>
+        </div>
+        <div class="question-card duo-qcard">
+          <div class="question-type-badge type-meaning" id="p1-type-badge">뜻 맞히기</div>
+          <div class="question-text" id="p1-question-text" style="font-size:clamp(13px,2.5vw,16px)"></div>
+        </div>
+        <div class="duo-choices" id="p1-choices"></div>
+        <div class="feedback-msg" id="p1-feedback" style="font-size:16px;min-height:26px;padding:3px"></div>
+      </div>
+
+      <!-- 구분선 -->
+      <div class="duo-divider"></div>
+
+      <!-- 플레이어 2 (오른쪽) -->
+      <div class="duo-panel" id="panel-p2">
+        <div class="duo-player-label p2-label">🔴 플레이어 2</div>
+        <div class="duo-score-row">
+          <span class="duo-score-chip">✅ <strong id="p2-correct">0</strong></span>
+          <span class="duo-score-chip">❌ <strong id="p2-wrong">0</strong></span>
+          <span class="duo-qnum" id="p2-qnum">문제 1</span>
+        </div>
+        <div class="question-card duo-qcard">
+          <div class="question-type-badge type-meaning" id="p2-type-badge">뜻 맞히기</div>
+          <div class="question-text" id="p2-question-text" style="font-size:clamp(13px,2.5vw,16px)"></div>
+        </div>
+        <div class="duo-choices" id="p2-choices"></div>
+        <div class="feedback-msg" id="p2-feedback" style="font-size:16px;min-height:26px;padding:3px"></div>
+      </div>
+
+    </div>
+  </div>
+  </div>
+</div>
+
+<!-- ══ DUO RESULT SCREEN ══ -->
+<div class="screen hidden" id="screen-duo-result">
+  <div class="screen-inner" id="inner-duo-result">
+  <div class="result-wrap">
+    <div class="result-trophy" id="duo-result-trophy">🏆</div>
+    <div class="result-title" id="duo-result-title">결과</div>
+    <div class="result-subtitle" id="duo-result-subtitle"></div>
+    <div class="duo-result-table" id="duo-result-table"></div>
+    <button class="btn-home" onclick="goHome()">🏠 처음으로 돌아가기</button>
+  </div>
+  </div>
+</div>
 <script>
 // ══ DATA ══
 const DATA = [
@@ -938,10 +1147,16 @@ function shuffle(arr) {
 }
 
 // ══ START GAME ══
-function startGame(mode) {
+function startGame(mode, playerMode) {
   gameMode = mode;
+  playerMode = playerMode || 'solo';
   targetCount = countValues[+sliderCount.value];
   targetSecs = +sliderTime.value * 60;
+
+  if (playerMode === 'duo') {
+    startDuoGame(mode);
+    return;
+  }
 
   questions = shuffle(DATA);
   if (mode === 'count') questions = questions.slice(0, targetCount);
@@ -1183,6 +1398,236 @@ function endGame() {
 
   showScreen('screen-result');
 }
+// ══ DUO GAME ══
+let duoState = {};
+
+function startDuoGame(mode) {
+  gameMode = mode;
+  gameActive = true;
+  startTime = Date.now();
+
+  const makePool = () => {
+    const q = shuffle(DATA);
+    return mode === 'count' ? q.slice(0, targetCount) : q;
+  };
+
+  duoState = {
+    p1: { correct: 0, wrong: 0, qIndex: 0, answered: false, questions: makePool(), startTimes: [] },
+    p2: { correct: 0, wrong: 0, qIndex: 0, answered: false, questions: makePool(), startTimes: [] },
+  };
+
+  document.getElementById('duo-mode-badge').textContent = mode === 'count' ? '개수 모드' : '시간 모드';
+  document.getElementById('p1-correct').textContent = '0';
+  document.getElementById('p1-wrong').textContent = '0';
+  document.getElementById('p2-correct').textContent = '0';
+  document.getElementById('p2-wrong').textContent = '0';
+
+  showScreen('screen-duo');
+  duoRenderQuestion('p1');
+  duoRenderQuestion('p2');
+  duoStartTimer();
+}
+
+function duoGetItem(pid) {
+  const st = duoState[pid];
+  if (gameMode === 'count') return st.questions[st.qIndex];
+  return shuffle(DATA)[0];
+}
+
+function duoRenderQuestion(pid) {
+  const st = duoState[pid];
+  if (!gameActive) return;
+  if (gameMode === 'count' && st.qIndex >= targetCount) return;
+
+  const item = duoGetItem(pid);
+  st.answered = false;
+  st.currentItem = item;
+  st.questionStartTime = Date.now();
+
+  const qType = Math.random() < 0.5 ? 'meaning' : 'example';
+  let qText;
+  if (qType === 'meaning') {
+    qText = `다음 뜻을 가진 사자성어는?<br>"${item.meaning}"`;
+  } else {
+    const ex = item.example.replace(item.word, '___');
+    qText = `빈칸에 알맞은 사자성어는?<br>"${ex}"`;
+  }
+
+  const qnum = gameMode === 'count'
+    ? `문제 ${st.qIndex + 1} / ${targetCount}`
+    : `문제 ${st.correct + st.wrong + 1}`;
+
+  document.getElementById(`${pid}-qnum`).textContent = qnum;
+  document.getElementById(`${pid}-type-badge`).textContent = qType === 'meaning' ? '뜻 맞히기' : '예문 맞히기';
+  document.getElementById(`${pid}-type-badge`).className = 'question-type-badge ' + (qType === 'meaning' ? 'type-meaning' : 'type-example');
+  document.getElementById(`${pid}-question-text`).innerHTML = qText;
+  document.getElementById(`${pid}-feedback`).textContent = '';
+  document.getElementById(`${pid}-feedback`).className = 'feedback-msg';
+
+  const others = shuffle(DATA.filter(d => d.word !== item.word)).slice(0, 3);
+  const choices = shuffle([item, ...others]);
+  const letters = ['①', '②', '③', '④'];
+  const grid = document.getElementById(`${pid}-choices`);
+  grid.innerHTML = '';
+  choices.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'choice-btn';
+    btn.innerHTML = `<span class="choice-letter">${letters[i]}</span><span>${c.word}</span>`;
+    btn.addEventListener('click', () => duoSelectAnswer(pid, btn, c.word === item.word, item));
+    grid.appendChild(btn);
+  });
+}
+
+function duoSelectAnswer(pid, btn, isCorrect, item) {
+  const st = duoState[pid];
+  if (st.answered || !gameActive) return;
+  st.answered = true;
+
+  const elapsed = (Date.now() - st.questionStartTime) / 1000;
+  st.startTimes.push(elapsed);
+
+  const grid = document.getElementById(`${pid}-choices`);
+  grid.querySelectorAll('.choice-btn').forEach(b => {
+    b.disabled = true;
+    if (b.querySelector('span:last-child').textContent === item.word) b.classList.add('correct');
+  });
+
+  const fb = document.getElementById(`${pid}-feedback`);
+  if (isCorrect) {
+    st.correct++;
+    btn.classList.add('correct');
+    fb.textContent = '✓ 정답!';
+    fb.className = 'feedback-msg correct';
+  } else {
+    st.wrong++;
+    btn.classList.add('wrong');
+    fb.textContent = `✗ 오답 — 정답: ${item.word}`;
+    fb.className = 'feedback-msg wrong';
+  }
+
+  document.getElementById(`${pid}-correct`).textContent = st.correct;
+  document.getElementById(`${pid}-wrong`).textContent = st.wrong;
+
+  if (gameMode === 'count') {
+    st.qIndex++;
+    if (st.qIndex >= targetCount) {
+      setTimeout(() => endDuoGame(), 800);
+      return;
+    }
+  }
+
+  setTimeout(() => {
+    if (!gameActive) return;
+    duoRenderQuestion(pid);
+  }, 900);
+}
+
+function duoStartTimer() {
+  clearInterval(timerInterval);
+  timerInterval = setInterval(() => {
+    if (!gameActive) return;
+    const elapsed = Math.floor((Date.now() - startTime) / 1000);
+    const display = document.getElementById('duo-timer-display');
+    const box = document.getElementById('duo-timer-box');
+
+    if (gameMode === 'count') {
+      const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+      const s = String(elapsed % 60).padStart(2, '0');
+      display.textContent = `${m}:${s}`;
+      display.classList.remove('urgent');
+      box.classList.remove('urgent');
+    } else {
+      const remaining = Math.max(0, targetSecs - elapsed);
+      const m = String(Math.floor(remaining / 60)).padStart(2, '0');
+      const s = String(remaining % 60).padStart(2, '0');
+      display.textContent = `${m}:${s}`;
+      display.classList.toggle('urgent', remaining <= 10);
+      box.classList.toggle('urgent', remaining <= 10);
+      if (remaining === 0) endDuoGame();
+    }
+  }, 250);
+}
+
+function endDuoGame() {
+  gameActive = false;
+  clearInterval(timerInterval);
+
+  const elapsed = Math.floor((Date.now() - startTime) / 1000);
+  const p1 = duoState.p1, p2 = duoState.p2;
+
+  const stat = (st) => {
+    const total = st.correct + st.wrong;
+    const acc = total > 0 ? Math.round(st.correct / total * 100) : 0;
+    const avgTime = st.startTimes.length > 0
+      ? (st.startTimes.reduce((a,b) => a+b, 0) / st.startTimes.length).toFixed(1)
+      : '-';
+    return { total, acc, avgTime };
+  };
+
+  const s1 = stat(p1), s2 = stat(p2);
+
+  // 승자 결정
+  let winner, trophy;
+  if (gameMode === 'count') {
+    // 개수 모드: 같은 문제 수 — 시간이 짧은 사람(정답 수 기준)
+    if (p1.correct > p2.correct) { winner = '🔵 플레이어 1 승리!'; trophy = '🏆'; }
+    else if (p2.correct > p1.correct) { winner = '🔴 플레이어 2 승리!'; trophy = '🏆'; }
+    else if (elapsed > 0) { winner = '🤝 무승부!'; trophy = '🤝'; }
+    else { winner = '🤝 무승부!'; trophy = '🤝'; }
+  } else {
+    if (p1.correct > p2.correct) { winner = '🔵 플레이어 1 승리!'; trophy = '🏆'; }
+    else if (p2.correct > p1.correct) { winner = '🔴 플레이어 2 승리!'; trophy = '🏆'; }
+    else { winner = '🤝 무승부!'; trophy = '🤝'; }
+  }
+
+  document.getElementById('duo-result-trophy').textContent = trophy;
+  document.getElementById('duo-result-title').textContent = winner;
+  document.getElementById('duo-result-subtitle').textContent =
+    gameMode === 'count'
+      ? `${targetCount}문제 개수 모드 결과`
+      : `${targetSecs/60}분 시간 모드 결과`;
+
+  const m = String(Math.floor(elapsed / 60)).padStart(2, '0');
+  const s = String(elapsed % 60).padStart(2, '0');
+
+  document.getElementById('duo-result-table').innerHTML = `
+    <table class="duo-result-table">
+      <thead>
+        <tr>
+          <th class="row-label"></th>
+          <th>🔵 플레이어 1</th>
+          <th>🔴 플레이어 2</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="row-label">정답 수</td>
+          <td class="p1-val ${p1.correct >= p2.correct ? 'winner-val' : ''}">${p1.correct}</td>
+          <td class="p2-val ${p2.correct >= p1.correct ? 'winner-val' : ''}">${p2.correct}</td>
+        </tr>
+        <tr>
+          <td class="row-label">오답 수</td>
+          <td class="p1-val">${p1.wrong}</td>
+          <td class="p2-val">${p2.wrong}</td>
+        </tr>
+        <tr>
+          <td class="row-label">정답률</td>
+          <td class="p1-val ${s1.acc >= s2.acc ? 'winner-val' : ''}">${s1.acc}%</td>
+          <td class="p2-val ${s2.acc >= s1.acc ? 'winner-val' : ''}">${s2.acc}%</td>
+        </tr>
+        <tr>
+          <td class="row-label">문항당 평균</td>
+          <td class="p1-val ${parseFloat(s1.avgTime) <= parseFloat(s2.avgTime) ? 'winner-val' : ''}">${s1.avgTime}초</td>
+          <td class="p2-val ${parseFloat(s2.avgTime) <= parseFloat(s1.avgTime) ? 'winner-val' : ''}">${s2.avgTime}초</td>
+        </tr>
+        ${gameMode === 'count' ? `<tr><td class="row-label">총 소요 시간</td><td colspan="2" style="text-align:center;font-size:18px;color:var(--muted)">${m}:${s}</td></tr>` : ''}
+      </tbody>
+    </table>
+  `;
+
+  showScreen('screen-duo-result');
+}
+
 </script>
 </body>
 </html>
