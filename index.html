@@ -149,7 +149,7 @@
   }
 
   .mode-inline-label {
-    font-size: 13px;
+    font-size: 15.6px;
     font-weight: 700;
     color: var(--gold);
     letter-spacing: 0.05em;
@@ -157,7 +157,7 @@
   }
   .mode-card h2 {
     font-family: 'Noto Serif KR', serif;
-    font-size: 20px;
+    font-size: 24px;
     font-weight: 700;
     color: var(--ink);
     margin-bottom: 6px;
@@ -285,7 +285,7 @@
   .badge-pill {
     background: var(--gold);
     color: white;
-    font-size: 12px;
+    font-size: 17.3px;
     font-weight: 700;
     padding: 4px 12px;
     border-radius: 99px;
@@ -306,6 +306,11 @@
     border-radius: 10px;
     padding: 8px 14px;
     box-shadow: 0 2px 8px var(--shadow);
+    transition: background 0.4s, border-color 0.4s;
+  }
+  .timer-box.urgent {
+    background: rgba(176,58,46,0.12);
+    border-color: var(--red);
   }
   .timer-icon { font-size: 16px; }
   .timer-val {
@@ -339,7 +344,7 @@
   }
 
   .question-card {
-    background: var(--card);
+    background: #fffdf9;
     border: 1.5px solid var(--paper2);
     border-radius: 20px;
     padding: 32px 28px 24px;
@@ -347,13 +352,19 @@
     margin-bottom: 20px;
     position: relative;
   }
+  .question-num-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+  }
   .question-num {
-    font-size: 11px;
+    font-size: 16.5px;
     font-weight: 500;
     letter-spacing: 0.15em;
     color: var(--muted);
     text-transform: uppercase;
-    margin-bottom: 16px;
+    margin-bottom: 0;
   }
 
   .question-type-badge {
@@ -363,7 +374,7 @@
     letter-spacing: 0.1em;
     padding: 3px 9px;
     border-radius: 99px;
-    margin-bottom: 12px;
+    margin-bottom: 0;
   }
   .type-meaning { background: rgba(200,146,42,0.12); color: var(--gold); }
   .type-example { background: rgba(45,106,79,0.12); color: var(--green); }
@@ -401,7 +412,7 @@
     gap: 10px;
     box-shadow: 0 2px 8px rgba(26,18,8,0.06);
     font-family: 'Noto Sans KR', sans-serif;
-    font-size: 14px;
+    font-size: 19px;
     line-height: 1.5;
     color: var(--ink);
   }
@@ -424,14 +435,14 @@
   }
   .choice-letter {
     flex-shrink: 0;
-    width: 22px;
-    height: 22px;
+    width: 30px;
+    height: 30px;
     border-radius: 50%;
     background: var(--paper2);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 11px;
+    font-size: 16px;
     font-weight: 700;
     color: var(--muted);
     margin-top: 1px;
@@ -443,12 +454,12 @@
 
   .feedback-msg {
     text-align: center;
-    font-size: 14px;
+    font-size: 21px;
     font-weight: 600;
-    padding: 10px;
+    padding: 5px;
     border-radius: 8px;
     margin-top: 4px;
-    min-height: 38px;
+    min-height: 19px;
     transition: opacity 0.3s;
   }
   .feedback-msg.correct { color: var(--green); }
@@ -457,20 +468,43 @@
   /* Score strip */
   .score-strip {
     display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 4px;
+  }
+  .score-chips {
+    display: flex;
     gap: 16px;
+    flex: 1;
     justify-content: center;
-    margin-top: 8px;
+  }
+  .btn-go-home {
+    background: #e8f0e4;
+    border: 2px solid #b0c8a8;
+    border-radius: 8px;
+    padding: 6px 14px;
+    font-family: 'Noto Sans KR', sans-serif;
+    font-size: 15.6px;
+    font-weight: 700;
+    color: #5a7a52;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-go-home:hover {
+    background: #ddebd8;
+    border-color: #8aaa80;
+    color: #3a5a34;
   }
   .score-chip {
     display: flex;
     align-items: center;
     gap: 6px;
-    font-size: 13px;
+    font-size: 17.6px;
     color: var(--muted);
   }
   .score-chip strong {
     font-family: 'Noto Serif KR', serif;
-    font-size: 18px;
+    font-size: 24.3px;
     color: var(--ink);
   }
   .dot { width: 8px; height: 8px; border-radius: 50%; }
@@ -658,8 +692,10 @@
     </div>
 
     <div class="question-card">
-      <div class="question-num" id="question-num">문제 1</div>
-      <span class="question-type-badge" id="question-type-badge">뜻 맞히기</span>
+      <div class="question-num-row">
+        <div class="question-num" id="question-num">문제 1</div>
+        <span class="question-type-badge" id="question-type-badge">뜻 맞히기</span>
+      </div>
       <div class="question-text" id="question-text">질문이 표시됩니다.</div>
       <div class="question-hanja" id="question-hanja"></div>
     </div>
@@ -669,8 +705,11 @@
     <div class="feedback-msg" id="feedback-msg"></div>
 
     <div class="score-strip">
-      <div class="score-chip"><div class="dot dot-correct"></div> 정답 <strong id="score-correct">0</strong></div>
-      <div class="score-chip"><div class="dot dot-wrong"></div> 오답 <strong id="score-wrong">0</strong></div>
+      <div class="score-chips">
+        <div class="score-chip"><div class="dot dot-correct"></div> 정답 <strong id="score-correct">0</strong></div>
+        <div class="score-chip"><div class="dot dot-wrong"></div> 오답 <strong id="score-wrong">0</strong></div>
+      </div>
+      <button class="btn-go-home" onclick="goHome()">처음으로</button>
     </div>
   </div>
   </div>
@@ -829,7 +868,7 @@ let gameActive = false;
 let answered = false;
 
 // ══ SCREEN NAV ══
-const MIN_SCALE = 0.75;
+const MIN_SCALE = 0.92;
 
 function fitScreen(screenId) {
   const screen = document.getElementById(screenId);
@@ -937,6 +976,7 @@ function startTimer() {
       const s = String(elapsed % 60).padStart(2, '0');
       display.textContent = `${m}:${s}`;
       display.classList.remove('urgent');
+      document.querySelector('.timer-box').classList.remove('urgent');
     } else {
       // Count down
       const remaining = Math.max(0, targetSecs - elapsed);
@@ -944,6 +984,7 @@ function startTimer() {
       const s = String(remaining % 60).padStart(2, '0');
       display.textContent = `${m}:${s}`;
       display.classList.toggle('urgent', remaining <= 10);
+      document.querySelector('.timer-box').classList.toggle('urgent', remaining <= 10);
       if (remaining === 0) endGame();
     }
   }, 250);
@@ -970,11 +1011,11 @@ function renderQuestion() {
 
   let qText, qBadge;
   if (qType === 'meaning') {
-    qText = `다음 뜻을 가진 사자성어는?<br><br>"${item.meaning}"`;
+    qText = `다음 뜻을 가진 사자성어는?<br>"${item.meaning}"`;
     qBadge = '뜻 맞히기';
   } else {
     const ex = item.example.replace(item.word, '___');
-    qText = `빈칸에 알맞은 사자성어는?<br><br>"${ex}"`;
+    qText = `빈칸에 알맞은 사자성어는?<br>"${ex}"`;
     qBadge = '예문 맞히기';
   }
 
@@ -985,7 +1026,7 @@ function renderQuestion() {
     const pct = (qIndex / targetCount) * 100;
     document.getElementById('progress-bar').style.width = pct + '%';
   } else {
-    document.getElementById('quiz-progress').textContent = `${correctCount + wrongCount + 1}번째`;
+    document.getElementById('quiz-progress').textContent = '';
     document.getElementById('question-num').textContent = `문제 ${correctCount + wrongCount + 1}`;
     document.getElementById('progress-bar').style.width = '0%';
   }
@@ -1127,9 +1168,18 @@ function endGame() {
   }
 
   // Rating message
-  const ratings = ['📚 사자성어의 세계를 탐험 중!', '✏️ 열심히 배우고 있어요!', '⭐ 점점 늘고 있습니다!', '🌟 실력이 괄목상대하는군요!', '💫 거의 마스터했어요!', '🏅 사자성어 마스터!'];
+  const ratings = [
+    '📚 정답률: 아직 시작 단계예요!',
+    '✏️ 정답률: 조금 더 공부하고 도전해야겠어요.',
+    '⭐ 정답률: 절반은 맞히고 있네요!',
+    '🌟 정답률: 꽤 잘 알고 있어요!',
+    '💫 정답률: 상당히 잘 알고 있어요!',
+    '🏅 정답률: 모두 맞혔어요!'
+  ];
   const ratingIdx = Math.min(Math.floor(accuracy / 20), 5);
-  document.getElementById('result-rating').innerHTML = `<strong>${ratings[ratingIdx]}</strong><br>정답률 ${accuracy}% · ${total}문제 중 ${correctCount}개 정답`;
+  let ratingMsg = ratings[ratingIdx];
+  if (accuracy === 100 && correctCount >= 15) ratingMsg = '🏅 정답률: 사자성어 마스터!';
+  document.getElementById('result-rating').innerHTML = `<strong>${ratingMsg}</strong><br>정답률 ${accuracy}% · ${total}문제 중 ${correctCount}개 정답`;
 
   showScreen('screen-result');
 }
