@@ -1281,7 +1281,11 @@ function renderQuestion() {
   document.getElementById('feedback-msg').className = 'feedback-msg';
 
   // Choices: 1 correct + 3 wrong
-  const others = shuffle(DATA.filter(d => d.word !== item.word)).slice(0, 3);
+  const SIMILAR_GROUPS = [
+    ["막상막하", "난형난제"],
+  ];
+  const similarWords = SIMILAR_GROUPS.find(g => g.includes(item.word))?.filter(w => w !== item.word) ?? [];
+  const others = shuffle(DATA.filter(d => d.word !== item.word && !similarWords.includes(d.word))).slice(0, 3);
   const choices = shuffle([item, ...others]);
 
   const grid = document.getElementById('choices-grid');
@@ -1337,7 +1341,7 @@ function selectAnswer(btn, isCorrect, item) {
     if (!gameActive) return;
     if (gameMode === 'count' && qIndex >= targetCount) { endGame(); return; }
     renderQuestion();
-  }, 1000);
+  }, isCorrect ? 1000 : 1500);
 }
 
 function flashScreen(color) {
@@ -1576,7 +1580,11 @@ function duoRenderQuestion(pid) {
   document.getElementById(`${pid}-feedback`).textContent = '';
   document.getElementById(`${pid}-feedback`).className = 'feedback-msg';
 
-  const others = shuffle(DATA.filter(d => d.word !== item.word)).slice(0, 3);
+  const SIMILAR_GROUPS_DUO = [
+    ["막상막하", "난형난제"],
+  ];
+  const similarWordsDuo = SIMILAR_GROUPS_DUO.find(g => g.includes(item.word))?.filter(w => w !== item.word) ?? [];
+  const others = shuffle(DATA.filter(d => d.word !== item.word && !similarWordsDuo.includes(d.word))).slice(0, 3);
   const choices = shuffle([item, ...others]);
   const letters = ['①', '②', '③', '④'];
   const grid = document.getElementById(`${pid}-choices`);
@@ -1631,7 +1639,7 @@ function duoSelectAnswer(pid, btn, isCorrect, item) {
   setTimeout(() => {
     if (!gameActive) return;
     duoRenderQuestion(pid);
-  }, 900);
+  }, isCorrect ? 900 : 1400);
 }
 
 function duoStartTimer() {
